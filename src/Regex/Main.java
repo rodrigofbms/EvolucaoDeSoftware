@@ -5,8 +5,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import com.opencsv.CSVWriter;
 
 public class Main {
 
@@ -24,14 +27,22 @@ public class Main {
         Integer totalDeLinhas = 0;
         Integer totalDeClasses = 0;
         Integer totalDeMetodos = 0;
+        String[] cabecalhoCSV = {"Mes","LOC","Classes","Metodos"};
+        List<String[]> linhasCSV = new ArrayList<>();
 
         Pattern patternComentarios = Pattern.compile(regexCOmentarios);
         Pattern patternClasse = Pattern.compile(regexClasse);
         Pattern patternMetodo = Pattern.compile(regexMetodo);
 
 
-
         String texto = "";
+
+        //Criacao do arquivo CSV
+        Writer writer = Files.newBufferedWriter(Paths.get("resultado.csv"));
+        CSVWriter csvWriter = new CSVWriter(writer);
+        //Escrevendo o cabecalho do CSV
+        csvWriter.writeNext(cabecalhoCSV);
+
 
         for (int i = 1; i <= 27; i++) {
             System.out.println("=================Mes " + i + " =================");
@@ -62,7 +73,7 @@ public class Main {
                 BufferedReader br = new BufferedReader(new FileReader(String.valueOf(path)));
                 System.out.println("-----Diretorio " + String.valueOf(path) +"-----" );
 
-                //Verificar a contagem de linhas, classes e metodos
+                //Verifica a contagem de linhas, classes e metodos
                 while ((texto = br.readLine()) != null) {
 
                     Matcher matcherComentarios = patternComentarios.matcher(texto);
@@ -83,7 +94,6 @@ public class Main {
                     }
                     if (matcherMetodo.find()) {
 
-                        //System.out.println(texto);
                         totalDeMetodos++;
 
                     }
@@ -91,9 +101,16 @@ public class Main {
                 System.out.println("Quantidade Total de Linhas de Código = " + totalDeLinhas);
                 System.out.println("Quantidade Total de Classes no Código = " + totalDeClasses);
                 System.out.println("Quantidade Total de Métodos no Código = " + totalDeMetodos);
+                //Adicionando os resultados do mes no CSV
+                linhasCSV.add(new String[]{i +"," + totalDeLinhas + "," + totalDeClasses + "," + totalDeMetodos});
+
             }
 
         }
+        //Escreve no arquivo CSV os resultados obtidos
+        csvWriter.writeAll(linhasCSV);
+        csvWriter.flush();
+        writer.close();
 
     }
 
