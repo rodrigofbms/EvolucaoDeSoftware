@@ -27,6 +27,10 @@ public class Main {
         Integer totalDeLinhas = 0;
         Integer totalDeClasses = 0;
         Integer totalDeMetodos = 0;
+        Integer totalDeLinhasMes = 0;
+        Integer totalDeClassesMes = 0;
+        Integer totalDeMetodosMes = 0;
+
         String[] cabecalhoCSV = {"Mes","LOC","Classes","Metodos"};
         List<String[]> linhasCSV = new ArrayList<>();
 
@@ -46,6 +50,11 @@ public class Main {
 
         for (int i = 1; i <= 27; i++) {
             System.out.println("=================Mes " + i + " =================");
+            //Resetar os valores do contador de cada mes
+            totalDeClassesMes = 0;
+            totalDeLinhasMes = 0;
+            totalDeMetodosMes = 0;
+
             for (int a = 0; a < 6; a++) {
 
                 //Resetar os valores do contador a cada entrada em cada respectivo arquivo
@@ -101,11 +110,16 @@ public class Main {
                 System.out.println("Quantidade Total de Linhas de Código = " + totalDeLinhas);
                 System.out.println("Quantidade Total de Classes no Código = " + totalDeClasses);
                 System.out.println("Quantidade Total de Métodos no Código = " + totalDeMetodos);
-                //Adicionando os resultados do mes no CSV
-                linhasCSV.add(new String[]{i +"," + totalDeLinhas + "," + totalDeClasses + "," + totalDeMetodos});
+
+                //Adicionando os valores de cada respectivo arquivo ao valor total do mes
+                totalDeLinhasMes += totalDeLinhas;
+                totalDeClassesMes += totalDeClasses;
+                totalDeMetodosMes += totalDeMetodos;
 
             }
 
+            //Adicionando o resultado do mes no CSV
+            linhasCSV.add(new String[]{i +"," + totalDeLinhasMes + "," + totalDeClassesMes + "," + totalDeMetodosMes});
         }
         //Escreve no arquivo CSV os resultados obtidos
         csvWriter.writeAll(linhasCSV);
