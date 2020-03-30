@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import com.opencsv.CSVWriter;
 
 public class Main {
 
@@ -31,9 +30,6 @@ public class Main {
         Integer totalDeClassesMes = 0;
         Integer totalDeMetodosMes = 0;
 
-        String[] cabecalhoCSV = {"Mes","LOC","Classes","Metodos"};
-        List<String[]> linhasCSV = new ArrayList<>();
-
         Pattern patternComentarios = Pattern.compile(regexCOmentarios);
         Pattern patternClasse = Pattern.compile(regexClasse);
         Pattern patternMetodo = Pattern.compile(regexMetodo);
@@ -43,9 +39,11 @@ public class Main {
 
         //Criacao do arquivo CSV
         Writer writer = Files.newBufferedWriter(Paths.get("resultado.csv"));
-        CSVWriter csvWriter = new CSVWriter(writer);
         //Escrevendo o cabecalho do CSV
-        csvWriter.writeNext(cabecalhoCSV);
+        writer.append("Mes" + ",");
+        writer.append("LOC" + ",");
+        writer.append("Classes" + ",");
+        writer.append("Metodos" + "\n");
 
 
         for (int i = 1; i <= 27; i++) {
@@ -119,11 +117,13 @@ public class Main {
             }
 
             //Adicionando o resultado do mes no CSV
-            linhasCSV.add(new String[]{i +"," + totalDeLinhasMes + "," + totalDeClassesMes + "," + totalDeMetodosMes});
+            writer.append(i +",");
+            writer.append(totalDeLinhasMes + ",");
+            writer.append(totalDeClassesMes + ",");
+            writer.append(totalDeMetodosMes +"\n");
         }
         //Escreve no arquivo CSV os resultados obtidos
-        csvWriter.writeAll(linhasCSV);
-        csvWriter.flush();
+        writer.flush();
         writer.close();
 
     }
