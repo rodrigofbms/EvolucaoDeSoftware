@@ -118,6 +118,7 @@ public class Main {
                         totalDeLinhasClasse++;
                         if(totalDeLinhasClasse > 800){
                             totalDeClassesDeuses++;
+                            totalDeLinhasClasse = 0;
                         }
                     }
                     if (matcherMetodo.find()) {
@@ -138,6 +139,7 @@ public class Main {
                         if (parentesesMetodo == 0) {
                             if (totalDeLinhasMetodo > 127) {
                                 totalDeMetodosDeuses++;
+                                totalDeLinhasMetodo = 0;
                             }
                         }
                     }
