@@ -51,7 +51,7 @@ public class Main {
         writer.append("Mes" + ",");
         writer.append("LOC" + ",");
         writer.append("Classes" + ",");
-        writer.append("Metodos" + "\n");
+        writer.append("Metodos" + ",");
         writer.append("Classes Deuses" + ",");
         writer.append("Metodos Deuses" + "\n");
 
