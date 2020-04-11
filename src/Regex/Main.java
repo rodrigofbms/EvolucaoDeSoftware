@@ -15,7 +15,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         String regexCOmentarios = "\\/\\*[\\w\\W]*?\\*\\/|\\/\\/.*|\\/\\*.*|\\*\\/|^\\s*\\*.*";
         String regexClasse = "\\s+class\\s+";
-        String regexMetodo = "public.+\\([^;=*]*\\)\\s*\\{|private.+\\([^;=*]*\\)\\s*\\{|protected.+\\([^;=*]*\\)\\s*\\{";
+        String regexMetodo = "public.+\\([^;=*{]*\\)\\s*\\{|private.+\\([^;=*{]*\\)\\s*\\{|protected.+\\([^;=*{]*\\)\\s*\\{";
         String arquivos[] = new String[6];
         arquivos[0] = "DispatchQueue.txt";
         arquivos[1] = "FileLoader.txt";
@@ -23,12 +23,20 @@ public class Main {
         arquivos[3] = "FileUploadOperation.txt";
         arquivos[4] = "UserConfig.txt";
         arquivos[5] = "Utilities.txt";
+        Integer parentesesMetodo = 0;
         Integer totalDeLinhas = 0;
         Integer totalDeClasses = 0;
         Integer totalDeMetodos = 0;
+        Integer totalDeMetodosDeuses = 0;
+        Integer totalDeClassesDeuses = 0;
+        Integer totalDeLinhasMetodo = 0;
+        Integer totalDeLinhasClasse = 0;
         Integer totalDeLinhasMes = 0;
         Integer totalDeClassesMes = 0;
         Integer totalDeMetodosMes = 0;
+        Integer totalDeMetodosDeusesMes = 0;
+        Integer totalDeClassesDeusesMes = 0;
+
 
         Pattern patternComentarios = Pattern.compile(regexCOmentarios);
         Pattern patternClasse = Pattern.compile(regexClasse);
@@ -44,6 +52,8 @@ public class Main {
         writer.append("LOC" + ",");
         writer.append("Classes" + ",");
         writer.append("Metodos" + "\n");
+        writer.append("Classes Deuses" + ",");
+        writer.append("Metodos Deuses" + "\n");
 
 
         for (int i = 1; i <= 27; i++) {
@@ -52,6 +62,8 @@ public class Main {
             totalDeClassesMes = 0;
             totalDeLinhasMes = 0;
             totalDeMetodosMes = 0;
+            totalDeMetodosDeusesMes = 0;
+            totalDeClassesDeusesMes = 0;
 
             for (int a = 0; a < 6; a++) {
 
@@ -59,6 +71,9 @@ public class Main {
                 totalDeClasses = 0;
                 totalDeLinhas = 0;
                 totalDeMetodos = 0;
+                totalDeClassesDeuses = 0;
+                totalDeMetodosDeuses = 0;
+                totalDeLinhasClasse = 0;
 
                 //Pegar o diretorio do dataset
                 Path path = Paths.get("Dataset/" + i + "/" + arquivos[a]);
@@ -95,24 +110,52 @@ public class Main {
                     }
 
                     if (matcherClasse.find()) {
-
+                        totalDeLinhasClasse = 0;
                         totalDeClasses++;
+                        totalDeLinhasClasse++;
 
+                    }else if(!texto.isEmpty()){
+                        totalDeLinhasClasse++;
+                        if(totalDeLinhasClasse > 800){
+                            totalDeClassesDeuses++;
+                        }
                     }
                     if (matcherMetodo.find()) {
-
+                        totalDeLinhasMetodo = 0;
+                        parentesesMetodo = 0;
+                        totalDeLinhasMetodo++;
+                        parentesesMetodo++;
                         totalDeMetodos++;
 
+                    }else if (!texto.isEmpty()){
+                        totalDeLinhasMetodo++;
+                        if (texto.contains("{")) {
+                            parentesesMetodo++;
+                        }
+                        if (texto.contains("}")) {
+                            parentesesMetodo--;
+                        }
+                        if (parentesesMetodo == 0) {
+                            if (totalDeLinhasMetodo > 127) {
+                                totalDeMetodosDeuses++;
+                            }
+                        }
                     }
+
                 }
                 System.out.println("Quantidade Total de Linhas de Código = " + totalDeLinhas);
                 System.out.println("Quantidade Total de Classes no Código = " + totalDeClasses);
                 System.out.println("Quantidade Total de Métodos no Código = " + totalDeMetodos);
+                System.out.println("Quantidade Total de Métodos Deuses = " + totalDeMetodosDeuses);
+                System.out.println("Quantidade Total de Classes Deuses = " + totalDeClassesDeuses);
+
 
                 //Adicionando os valores de cada respectivo arquivo ao valor total do mes
                 totalDeLinhasMes += totalDeLinhas;
                 totalDeClassesMes += totalDeClasses;
                 totalDeMetodosMes += totalDeMetodos;
+                totalDeMetodosDeusesMes += totalDeMetodosDeuses;
+                totalDeClassesDeusesMes += totalDeClassesDeuses;
 
             }
 
@@ -120,7 +163,9 @@ public class Main {
             writer.append(i +",");
             writer.append(totalDeLinhasMes + ",");
             writer.append(totalDeClassesMes + ",");
-            writer.append(totalDeMetodosMes +"\n");
+            writer.append(totalDeMetodosMes +",");
+            writer.append(totalDeClassesDeusesMes +",");
+            writer.append(totalDeMetodosDeusesMes +"\n");
         }
         //Escreve no arquivo CSV os resultados obtidos
         writer.flush();
