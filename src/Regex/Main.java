@@ -5,8 +5,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,11 +29,11 @@ public class Main {
         Integer totalDeClassesDeuses = 0;
         Integer totalDeLinhasMetodo = 0;
         Integer totalDeLinhasClasse = 0;
-        Integer totalDeLinhasMes = 0;
-        Integer totalDeClassesMes = 0;
-        Integer totalDeMetodosMes = 0;
-        Integer totalDeMetodosDeusesMes = 0;
-        Integer totalDeClassesDeusesMes = 0;
+        Integer totalDeLinhasTotal = 0;
+        Integer totalDeMetodosTotal = 0;
+        Integer totalDeClassesTotal = 0;
+        Integer totalDeClassesDeusesTotal = 0;
+        Integer totalDeMetodosDeusesTotal = 0;
 
 
         Pattern patternComentarios = Pattern.compile(regexCOmentarios);
@@ -45,9 +43,10 @@ public class Main {
 
         String texto = "";
 
-        //Criacao do arquivo CSV
+        //Criacao do arquivo CSV 27 meses
         Writer writer = Files.newBufferedWriter(Paths.get("resultado.csv"));
-        //Escrevendo o cabecalho do CSV
+
+        //Escrevendo o cabecalho do CSV 27 meses
         writer.append("Mes" + ",");
         writer.append("LOC" + ",");
         writer.append("Classes" + ",");
@@ -55,15 +54,36 @@ public class Main {
         writer.append("Classes Deuses" + ",");
         writer.append("Metodos Deuses" + "\n");
 
+        //Criacao do arquivo CSV 28 meses
+        Writer writer2 = Files.newBufferedWriter(Paths.get("predicao.csv"));
 
-        for (int i = 1; i <= 27; i++) {
+        //Escrevendo o cabecalho do CSV 28 meses
+        writer2.append("Mes" + ",");
+        writer2.append("LOC" + ",");
+        writer2.append("Classes" + ",");
+        writer2.append("Metodos" + ",");
+        writer2.append("Classes Deuses" + ",");
+        writer2.append("Metodos Deuses" + "\n");
+
+        Integer [] totalDeLinhasMesArray = new Integer[28];
+        Integer [] totalDeClassesMesArray = new Integer[28];
+        Integer [] totalDeMetodosMesArray = new Integer[28];
+        Integer [] totalDeClassesDeusesMesArray = new Integer[28];
+        Integer [] totalDeMetodosDeusesMesArray = new Integer[28];
+
+        //Inicializando os valores dos arrays
+        for (int t = 1; t < totalDeClassesMesArray.length; t++){
+            totalDeLinhasMesArray[t] = 0;
+            totalDeClassesMesArray[t] = 0;
+            totalDeMetodosMesArray[t] = 0;
+            totalDeClassesDeusesMesArray[t] = 0;
+            totalDeMetodosDeusesMesArray[t] = 0;
+        }
+
+        int i = 1;
+
+        for (; i <= 27; i++) {
             System.out.println("=================Mes " + i + " =================");
-            //Resetar os valores do contador de cada mes
-            totalDeClassesMes = 0;
-            totalDeLinhasMes = 0;
-            totalDeMetodosMes = 0;
-            totalDeMetodosDeusesMes = 0;
-            totalDeClassesDeusesMes = 0;
 
             for (int a = 0; a < 6; a++) {
 
@@ -95,7 +115,7 @@ public class Main {
                 BufferedReader br = new BufferedReader(new FileReader(String.valueOf(path)));
                 System.out.println("-----Diretorio " + String.valueOf(path) +"-----" );
 
-                //Verifica a contagem de linhas, classes e metodos
+                //Verifica a contagem de linhas, classes, metodos, classes deuses e metodos deuses
                 while ((texto = br.readLine()) != null) {
 
                     Matcher matcherComentarios = patternComentarios.matcher(texto);
@@ -153,26 +173,95 @@ public class Main {
 
 
                 //Adicionando os valores de cada respectivo arquivo ao valor total do mes
-                totalDeLinhasMes += totalDeLinhas;
-                totalDeClassesMes += totalDeClasses;
-                totalDeMetodosMes += totalDeMetodos;
-                totalDeMetodosDeusesMes += totalDeMetodosDeuses;
-                totalDeClassesDeusesMes += totalDeClassesDeuses;
+                totalDeLinhasMesArray [i] += totalDeLinhas;
+                totalDeClassesMesArray [i] += totalDeClasses;
+                totalDeMetodosMesArray [i] += totalDeMetodos;
+                totalDeClassesDeusesMesArray [i] += totalDeClassesDeuses;
+                totalDeMetodosDeusesMesArray [i] += totalDeMetodosDeuses;
+
+
 
             }
 
-            //Adicionando o resultado do mes no CSV
-            writer.append(i +",");
-            writer.append(totalDeLinhasMes + ",");
-            writer.append(totalDeClassesMes + ",");
-            writer.append(totalDeMetodosMes +",");
-            writer.append(totalDeClassesDeusesMes +",");
-            writer.append(totalDeMetodosDeusesMes +"\n");
-        }
-        //Escreve no arquivo CSV os resultados obtidos
-        writer.flush();
-        writer.close();
+            //Adicionando os valores totais de cada variavel
+            totalDeLinhasTotal += totalDeLinhasMesArray [i];
+            totalDeClassesTotal += totalDeClassesMesArray [i];
+            totalDeMetodosTotal += totalDeMetodosMesArray [i];
+            totalDeClassesDeusesTotal += totalDeClassesDeusesMesArray [i];
+            totalDeMetodosDeusesTotal += totalDeMetodosDeusesMesArray [i];
 
+            //Adicionando o resultado do mes no CSV de 27 meses
+                writer.append(i + ",");
+                writer.append(totalDeLinhasMesArray[i] + ",");
+                writer.append(totalDeClassesMesArray[i] + ",");
+                writer.append(totalDeMetodosMesArray[i] + ",");
+                writer.append(totalDeClassesDeusesMesArray[i] + ",");
+                writer.append(totalDeMetodosDeusesMesArray[i] + "\n");
+
+            //Adicionando o resultado do mes no CSV de 28 meses
+            writer2.append(i + ",");
+            writer2.append(totalDeLinhasMesArray[i] + ",");
+            writer2.append(totalDeClassesMesArray[i] + ",");
+            writer2.append(totalDeMetodosMesArray[i] + ",");
+            writer2.append(totalDeClassesDeusesMesArray[i] + ",");
+            writer2.append(totalDeMetodosDeusesMesArray[i] + "\n");
+
+
+        }
+
+        //Pegando os valores da media aritmetica de cada variavel
+        Integer mediaAritmeticaLOC = mediaAritmetica(totalDeLinhasTotal,i);
+        Integer mediaAritmeticaClasses = mediaAritmetica(totalDeClassesTotal,i);
+        Integer mediaAritmeticaMetodos = mediaAritmetica(totalDeMetodosTotal,i);
+        Integer mediaAritmeticaClassesDeuses = mediaAritmetica(totalDeClassesDeusesTotal,i);
+        Integer mediaAritmeticaMetodosDeuses = mediaAritmetica(totalDeMetodosDeusesTotal,i);
+
+
+        //Desvio padrao de cada variavel
+        int desvioPadraoLOC = 0;
+        int desvioPadraoClasses = 0;
+        int desvioPadraoMetodos = 0;
+        int desvioPadraoClassesDeuses = 0;
+        int desvioPadraoMetodosDeuses = 0;
+
+        //Predicao dos valores do 28 mes
+        desvioPadraoLOC = desvioPadrao(totalDeLinhasMesArray, mediaAritmeticaLOC, i);
+        desvioPadraoMetodos = desvioPadrao(totalDeMetodosMesArray, mediaAritmeticaMetodos, i);
+        desvioPadraoClasses = desvioPadrao(totalDeClassesMesArray, mediaAritmeticaClasses, i);
+        desvioPadraoClassesDeuses = desvioPadrao(totalDeClassesDeusesMesArray, mediaAritmeticaClassesDeuses, i);
+        desvioPadraoMetodosDeuses = desvioPadrao(totalDeMetodosDeusesMesArray, mediaAritmeticaMetodosDeuses, i);
+
+
+        //Adicionando a predicao do 28 mes no CSV de 28 meses
+        writer2.append(i + ",");
+        writer2.append(mediaAritmeticaLOC - desvioPadraoLOC + ",");
+        writer2.append(mediaAritmeticaClasses - desvioPadraoClasses + ",");
+        writer2.append(mediaAritmeticaMetodos - desvioPadraoMetodos + ",");
+        writer2.append(mediaAritmeticaClassesDeuses - desvioPadraoClassesDeuses + ",");
+        writer2.append(mediaAritmeticaMetodosDeuses - desvioPadraoMetodosDeuses + "\n");
+
+        //Escreve nos arquivos CSVs de 27 meses e de 28 meses os resultados obtidos
+        writer.flush();
+        writer2.flush();
+        writer.close();
+        writer2.close();
+    }
+    public static int mediaAritmetica(int total, int totalDeMeses){
+        return total/(totalDeMeses - 1);
+    }
+
+    public static int desvioPadrao(Integer [] array, int mediaAritmetica, int totalDeMeses) {
+        double valorAoQuadrado = 0;
+        double somatorioDesvioPadrao = 0;
+        double desvioPadrao = 0;
+        for (int f = 1; f < array.length; f++) {
+            valorAoQuadrado = Math.pow((array[f] - mediaAritmetica), 2);
+            somatorioDesvioPadrao += valorAoQuadrado;
+        }
+        desvioPadrao = Math.sqrt((somatorioDesvioPadrao/(totalDeMeses - 1)));
+        int desvioPadraoInt = (int)desvioPadrao;
+
+        return desvioPadraoInt;
     }
 
 }
